@@ -3,14 +3,14 @@ package com.truckmanager.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.padding
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,18 +26,23 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(navController: NavHostController) {
-    val items = listOf("Dashboard", "Trips", "Expenses", "Settings")
-    var selectedItem by remember { mutableStateOf(0) }
+    val tabs = listOf(
+        "Dashboard",
+        "Trips",
+        "Expenses",
+        "Settings"
+    )
+    var selectedIndex by remember { mutableStateOf(0) }
 
     Scaffold(
         bottomBar = {
             NavigationBar {
-                items.forEachIndexed { index, item ->
+                tabs.forEachIndexed { index, title ->
                     NavigationBarItem(
-                        selected = selectedItem == index,
+                        selected = selectedIndex == index,
                         onClick = {
-                            selectedItem = index
-                            navController.navigate(item) {
+                            selectedIndex = index
+                            navController.navigate(title) {
                                 popUpTo(navController.graph.startDestinationId) {
                                     saveState = true
                                 }
@@ -45,17 +50,17 @@ fun MainScreen(navController: NavHostController) {
                                 restoreState = true
                             }
                         },
-                        label = { Text(item) },
-                        icon = { /* Icons can be added later */ }
+                        label = { Text(title) },
+                        icon = { /* add icons later */ }
                     )
                 }
             }
         }
     ) { innerPadding ->
         NavHost(
-            navController,
+            navController = navController,
             startDestination = "Dashboard",
-            Modifier.padding(innerPadding)
+            modifier = Modifier.padding(innerPadding)
         ) {
             composable("Dashboard") { DashboardScreen() }
             composable("Trips") { TripsScreen() }
@@ -72,15 +77,15 @@ fun DashboardScreen() {
 
 @Composable
 fun TripsScreen() {
-    Text("Trips Page 🛣️", style = MaterialTheme.typography.headlineMedium)
+    Text("Trips 🛣️", style = MaterialTheme.typography.headlineMedium)
 }
 
 @Composable
 fun ExpensesScreen() {
-    Text("Expenses Page 💸", style = MaterialTheme.typography.headlineMedium)
+    Text("Expenses 💸", style = MaterialTheme.typography.headlineMedium)
 }
 
 @Composable
 fun SettingsScreen() {
-    Text("Settings Page ⚙️", style = MaterialTheme.typography.headlineMedium)
+    Text("Settings ⚙️", style = MaterialTheme.typography.headlineMedium)
 }
