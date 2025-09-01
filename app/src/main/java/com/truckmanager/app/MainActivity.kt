@@ -18,30 +18,25 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                DashboardScreen()
+                AppNavigation()
             }
         }
     }
 }
 
 @Composable
-fun DashboardScreen() {
-    val context = LocalContext.current  // ✅ fixed LocalContext import
-
-    // Demo values
+fun DashboardScreen(navController: androidx.navigation.NavController) {
     val revenue = remember { mutableStateOf(120000.0) }
     val expenses = remember { mutableStateOf(45000.0) }
     val netIncome = revenue.value - expenses.value
 
     Scaffold(
-    topBar = {
-        TopAppBar(
-            title = { Text("TM1D Dashboard 🚛") }
-        )
-    }
-)
-
-    { padding ->
+        topBar = {
+            SmallTopAppBar(
+                title = { Text("TM1D Dashboard 🚛") }
+            )
+        }
+    ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
@@ -53,9 +48,17 @@ fun DashboardScreen() {
             StatCard("Revenue", "${revenue.value} Birr")
             StatCard("Expenses", "${expenses.value} Birr")
             StatCard("Net Income", "$netIncome Birr")
+
+            Button(onClick = { navController.navigate("trips") }) {
+                Text("Go to Trips")
+            }
+            Button(onClick = { navController.navigate("settings") }) {
+                Text("Go to Settings")
+            }
         }
     }
 }
+
 
 @Composable
 fun StatCard(title: String, value: String) {
@@ -74,5 +77,38 @@ fun StatCard(title: String, value: String) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             Text(value, style = MaterialTheme.typography.headlineSmall)
         }
+    }
+}
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+
+@Composable
+fun AppNavigation() {
+    val navController = rememberNavController()
+
+    NavHost(navController = navController, startDestination = "dashboard") {
+        composable("dashboard") { DashboardScreen(navController) }
+        composable("trips") { TripsScreen() }
+        composable("settings") { SettingsScreen() }
+    }
+}
+@Composable
+fun TripsScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Trips Screen (Coming soon)")
+    }
+}
+
+@Composable
+fun SettingsScreen() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Settings Screen (Coming soon)")
     }
 }
