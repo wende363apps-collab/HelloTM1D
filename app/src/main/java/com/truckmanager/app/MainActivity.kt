@@ -34,12 +34,14 @@ fun DashboardScreen() {
     val netIncome = revenue.value - expenses.value
 
     Scaffold(
-        topBar = {
-            SmallTopAppBar(
-                title = { Text("TM1D Dashboard 🚛") }
-            )
-        }
-    ) { padding ->
+    topBar = {
+        TopAppBar(
+            title = { Text("TM1D Dashboard 🚛") }
+        )
+    }
+)
+
+    { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
