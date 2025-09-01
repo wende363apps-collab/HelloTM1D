@@ -72,8 +72,40 @@ fun MainScreen(navController: NavHostController) {
 
 @Composable
 fun DashboardScreen() {
-    Text("Dashboard 🚛", style = MaterialTheme.typography.headlineMedium)
+    var voyages by remember { mutableStateOf(listOf<Voyage>()) }
+    val context = LocalContext.current
+    val db = remember { AppDatabase.getDatabase(context) }
+    val dao = db.voyageDao()
+
+    LaunchedEffect(Unit) {
+        voyages = dao.getAllVoyages()
+    }
+
+    Column {
+        Button(onClick = {
+            val nextNumber = (voyages.firstOrNull()?.voyageNumber ?: 0) + 1
+            val newVoyage = Voyage(
+                voyageNumber = nextNumber,
+                departure = "City A",
+                arrival = "City B",
+                cargoPrice = 5000.0,
+                expenses = 2000.0,
+                netIncome = 3000.0
+            )
+            LaunchedEffect(Unit) {
+                dao.insertVoyage(newVoyage)
+                voyages = dao.getAllVoyages()
+            }
+        }) {
+            Text("Add Voyage")
+        }
+
+        voyages.forEach { v ->
+            Text("Voyage ${v.voyageNumber}: Net = ${v.netIncome} Birr")
+        }
+    }
 }
+
 
 @Composable
 fun TripsScreen() {
