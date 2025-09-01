@@ -21,9 +21,9 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DashboardScreen() {
-    // Demo values (later we’ll connect to database)
     val revenue = remember { mutableStateOf(120000.0) }
     val expenses = remember { mutableStateOf(45000.0) }
     val netIncome = revenue.value - expenses.value
