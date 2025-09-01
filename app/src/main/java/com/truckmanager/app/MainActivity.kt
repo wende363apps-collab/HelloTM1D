@@ -30,7 +30,9 @@ fun DashboardScreen() {
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(title = { Text("TM1D Dashboard 🚛") })
+            SmallTopAppBar(
+                title = { Text("TM1D Dashboard 🚛") }
+            )
         }
     ) { padding ->
         Column(
