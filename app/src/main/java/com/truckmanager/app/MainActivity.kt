@@ -3,69 +3,84 @@ package com.truckmanager.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                DashboardScreen()
+                val navController = rememberNavController()
+                MainScreen(navController)
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen() {
-    val revenue = remember { mutableStateOf(120000.0) }
-    val expenses = remember { mutableStateOf(45000.0) }
-    val netIncome = revenue.value - expenses.value
+fun MainScreen(navController: NavHostController) {
+    val items = listOf("Dashboard", "Trips", "Expenses", "Settings")
+    var selectedItem by remember { mutableStateOf(0) }
 
     Scaffold(
-        topBar = {
-            SmallTopAppBar(
-                title = { Text("TM1D Dashboard 🚛") }
-            )
+        bottomBar = {
+            NavigationBar {
+                items.forEachIndexed { index, item ->
+                    NavigationBarItem(
+                        selected = selectedItem == index,
+                        onClick = {
+                            selectedItem = index
+                            navController.navigate(item) {
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        label = { Text(item) },
+                        icon = { /* Icons can be added later */ }
+                    )
+                }
+            }
         }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+    ) { innerPadding ->
+        NavHost(
+            navController,
+            startDestination = "Dashboard",
+            Modifier.padding(innerPadding)
         ) {
-            StatCard("Revenue", "${revenue.value} Birr")
-            StatCard("Expenses", "${expenses.value} Birr")
-            StatCard("Net Income", "$netIncome Birr")
+            composable("Dashboard") { DashboardScreen() }
+            composable("Trips") { TripsScreen() }
+            composable("Expenses") { ExpensesScreen() }
+            composable("Settings") { SettingsScreen() }
         }
     }
 }
 
 @Composable
-fun StatCard(title: String, value: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
-            Text(value, style = MaterialTheme.typography.headlineSmall)
-        }
-    }
+fun DashboardScreen() {
+    Text("Dashboard 🚛", style = MaterialTheme.typography.headlineMedium)
+}
+
+@Composable
+fun TripsScreen() {
+    Text("Trips Page 🛣️", style = MaterialTheme.typography.headlineMedium)
+}
+
+@Composable
+fun ExpensesScreen() {
+    Text("Expenses Page 💸", style = MaterialTheme.typography.headlineMedium)
+}
+
+@Composable
+fun SettingsScreen() {
+    Text("Settings Page ⚙️", style = MaterialTheme.typography.headlineMedium)
 }
