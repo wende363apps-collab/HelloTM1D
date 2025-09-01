@@ -71,5 +71,7 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.6")
 
 // (you already have material3 + compose, keep them as they are)
+   
+    implementation "androidx.navigation:navigation-compose:2.7.6"
     
 }
