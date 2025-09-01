@@ -35,9 +35,9 @@ fun AppNavigation() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)   // 👈 FIX
 @Composable
 fun DashboardScreen() {
-    // Demo values (later we’ll connect to database)
     val revenue = remember { mutableStateOf(120000.0) }
     val expenses = remember { mutableStateOf(45000.0) }
     val netIncome = revenue.value - expenses.value
@@ -64,6 +64,7 @@ fun DashboardScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)   // 👈 FIX
 @Composable
 fun TripsScreen() {
     Scaffold(
@@ -82,6 +83,7 @@ fun TripsScreen() {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)   // 👈 FIX
 @Composable
 fun ExpensesScreen() {
     Scaffold(
