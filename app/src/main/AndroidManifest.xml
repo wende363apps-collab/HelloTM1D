@@ -2,7 +2,8 @@
 
     <application
         android:label="HelloTM1D"
-        android:theme="@style/Theme.Material3.DayNight.NoActionBar">
+        android:theme="@style/Theme.Material3.DayNight">
+
 
         <activity
             android:name=".MainActivity"
