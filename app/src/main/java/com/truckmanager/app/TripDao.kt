@@ -1,15 +1,15 @@
 package com.truckmanager.app
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
+import androidx.room.*
 
 @Dao
 interface TripDao {
-    @Query("SELECT * FROM trips")
-    fun getAllTrips(): Flow<List<Trip>>
-
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTrip(trip: Trip)
+
+    @Query("SELECT * FROM trips ORDER BY date DESC")
+    suspend fun getAllTrips(): List<Trip>
+
+    @Delete
+    suspend fun deleteTrip(trip: Trip)
 }
