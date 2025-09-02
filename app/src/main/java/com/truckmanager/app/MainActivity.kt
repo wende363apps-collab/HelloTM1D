@@ -9,12 +9,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     private val tripViewModel: TripViewModel by viewModels()
@@ -30,77 +27,103 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun TripScreen(viewModel: TripViewModel) {
-    val trips by viewModel.allTrips.collectAsState()
-
-    var tripName by remember { mutableStateOf("") }
-    var distance by remember { mutableStateOf("") }
+fun TripScreen(viewModel: TripViewModel = viewModel()) {
+    var destination by remember { mutableStateOf("") }
+    var date by remember { mutableStateOf("") }
+    var revenue by remember { mutableStateOf("") }
+    var expenses by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
-            SmallTopAppBar(title = { Text("🚛 Trip Manager") })
+            SmallTopAppBar(
+                title = { Text("TM1D - Trips 🚛") }
+            )
         }
     ) { padding ->
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Input fields
             OutlinedTextField(
-                value = tripName,
-                onValueChange = { tripName = it },
-                label = { Text("Trip Name") },
+                value = destination,
+                onValueChange = { destination = it },
+                label = { Text("Destination") },
                 modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
-                value = distance,
-                onValueChange = { distance = it },
-                label = { Text("Distance (km)") },
+                value = date,
+                onValueChange = { date = it },
+                label = { Text("Date") },
                 modifier = Modifier.fillMaxWidth()
             )
+            OutlinedTextField(
+                value = revenue,
+                onValueChange = { revenue = it },
+                label = { Text("Revenue (Birr)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+            OutlinedTextField(
+                value = expenses,
+                onValueChange = { expenses = it },
+                label = { Text("Expenses (Birr)") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Button(
                 onClick = {
-                    if (tripName.isNotBlank() && distance.isNotBlank()) {
-                        viewModel.addTrip(tripName, distance.toIntOrNull() ?: 0)
-                        tripName = ""
-                        distance = ""
+                    if (destination.isNotBlank() && date.isNotBlank() &&
+                        revenue.isNotBlank() && expenses.isNotBlank()
+                    ) {
+                        viewModel.addTrip(
+                            destination,
+                            date,
+                            revenue.toDouble(),
+                            expenses.toDouble()
+                        )
+                        destination = ""
+                        date = ""
+                        revenue = ""
+                        expenses = ""
                     }
                 },
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Add Trip")
             }
 
-            Divider()
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text("Trips List", style = MaterialTheme.typography.titleMedium)
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(trips) { trip ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = CardDefaults.cardElevation(4.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(12.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text("${trip.name} - ${trip.distance} km")
-                            IconButton(onClick = { viewModel.deleteTrip(trip) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete Trip"
-                                )
-                            }
-                        }
-                    }
+                // later we will load from DB
+                items(listOf<Trip>()) { trip ->
+                    TripItem(trip)
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun TripItem(trip: Trip) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text("Destination: ${trip.destination}")
+            Text("Date: ${trip.date}")
+            Text("Revenue: ${trip.revenue} Birr")
+            Text("Expenses: ${trip.expenses} Birr")
         }
     }
 }
