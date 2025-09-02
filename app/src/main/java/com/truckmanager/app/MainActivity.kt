@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
+@OptIn(ExperimentalMaterial3Api::class) // ✅ Fix for SmallTopAppBar
 class MainActivity : ComponentActivity() {
     private val tripViewModel: TripViewModel by viewModels()
 
@@ -47,7 +48,6 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Input fields
             OutlinedTextField(
                 value = destination,
                 onValueChange = { destination = it },
@@ -102,7 +102,7 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                // later we will load from DB
+                // 🚧 Step 6 will connect this to DB
                 items(listOf<Trip>()) { trip ->
                     TripItem(trip)
                 }
