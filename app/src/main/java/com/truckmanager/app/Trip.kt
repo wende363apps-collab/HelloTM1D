@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Trip(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val destination: String,
-    val distance: Double,
-    val date: String
+    val date: String,
+    val revenue: Double,
+    val expenses: Double
 )
