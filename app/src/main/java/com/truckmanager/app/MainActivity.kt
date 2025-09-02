@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-@OptIn(ExperimentalMaterial3Api::class) // ✅ Fix for SmallTopAppBar
+@OptIn(ExperimentalMaterial3Api::class) // ✅ FIX: allows using SmallTopAppBar
 class MainActivity : ComponentActivity() {
     private val tripViewModel: TripViewModel by viewModels()
 
@@ -102,7 +102,7 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize()
             ) {
-                // 🚧 Step 6 will connect this to DB
+                // 🚧 Step 6 will connect to DB
                 items(listOf<Trip>()) { trip ->
                     TripItem(trip)
                 }
