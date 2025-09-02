@@ -10,32 +10,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.room.Room
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // ✅ Initialize Room database (for later use)
+        // ✅ Initialize Room database
         val db = Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "truckmanager-db"
         ).build()
 
+        // Insert a sample trip only once
+        CoroutineScope(Dispatchers.IO).launch {
+            val tripDao = db.tripDao()
+            if (tripDao.getAllTrips().isEmpty()) {
+                tripDao.insertTrip(
+                    Trip(
+                        truckNumber = "TM-1001",
+                        origin = "Addis Ababa",
+                        destination = "Djibouti",
+                        revenue = 120000.0,
+                        expenses = 45000.0
+                    )
+                )
+            }
+        }
+
         setContent {
             MaterialTheme {
-                DashboardScreen()
+                DashboardScreen(db)
             }
         }
     }
 }
 
 @Composable
-fun DashboardScreen() {
-    // Demo values (later we’ll connect to database)
-    val revenue = remember { mutableStateOf(120000.0) }
-    val expenses = remember { mutableStateOf(45000.0) }
-    val netIncome = revenue.value - expenses.value
+fun DashboardScreen(db: AppDatabase) {
+    var trips by remember { mutableStateOf(listOf<Trip>()) }
+
+    // Load trips from DB
+    LaunchedEffect(Unit) {
+        trips = db.tripDao().getAllTrips()
+    }
+
+    val totalRevenue = trips.sumOf { it.revenue }
+    val totalExpenses = trips.sumOf { it.expenses }
+    val netIncome = totalRevenue - totalExpenses
 
     Scaffold(
         topBar = {
@@ -52,9 +77,30 @@ fun DashboardScreen() {
             verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            StatCard("Revenue", "${revenue.value} Birr")
-            StatCard("Expenses", "${expenses.value} Birr")
+            // Summary cards
+            StatCard("Revenue", "$totalRevenue Birr")
+            StatCard("Expenses", "$totalExpenses Birr")
             StatCard("Net Income", "$netIncome Birr")
+
+            // Show trips list
+            trips.forEach { trip ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(80.dp),
+                    elevation = CardDefaults.cardElevation(2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text("Truck: ${trip.truckNumber}", style = MaterialTheme.typography.titleMedium)
+                        Text("${trip.origin} ➝ ${trip.destination}")
+                    }
+                }
+            }
         }
     }
 }
