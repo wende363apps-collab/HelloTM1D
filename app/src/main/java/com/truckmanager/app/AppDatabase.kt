@@ -1,25 +1,29 @@
 package com.truckmanager.app
 
-import android.content.Context
 import androidx.room.Database
-import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [Voyage::class], version = 1)
+// Example entity (replace with your real data classes later)
+@Entity(tableName = "trips")
+data class Trip(
+    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val origin: String,
+    val destination: String,
+    val distanceKm: Int
+)
+
+// DAO (Data Access Object) for trips
+@Dao
+interface TripDao {
+    @Query("SELECT * FROM trips")
+    fun getAllTrips(): List<Trip>
+
+    @Insert
+    fun insertTrip(trip: Trip)
+}
+
+// Database class
+@Database(entities = [Trip::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun voyageDao(): VoyageDao
-
-    companion object {
-        @Volatile private var INSTANCE: AppDatabase? = null
-
-        fun getDatabase(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "tm1d_database"
-                ).build().also { INSTANCE = it }
-            }
-        }
-    }
+    abstract fun tripDao(): TripDao
 }
