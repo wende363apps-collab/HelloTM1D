@@ -5,87 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.material3.icons.Icons
-import androidx.compose.material3.icons.filled.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.room.*
-
-// --------------------- STEP 2: DATA MODELS ---------------------
-
-@Entity
-data class Trip(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val origin: String,
-    val destination: String,
-    val distanceKm: Double,
-    val revenue: Double,
-    val expense: Double
-)
-
-@Entity
-data class Truck(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val plateNumber: String,
-    val model: String,
-    val capacityTons: Double
-)
-
-@Entity
-data class Driver(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val name: String,
-    val licenseNumber: String,
-    val phone: String
-)
-
-@Entity
-data class Expense(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
-    val type: String,
-    val amount: Double,
-    val date: String
-)
-
-// --------------------- STEP 3: DAO ---------------------
-
-@Dao
-interface TripDao {
-    @Insert suspend fun insert(trip: Trip)
-    @Query("SELECT * FROM Trip") suspend fun getAll(): List<Trip>
-}
-
-@Dao
-interface TruckDao {
-    @Insert suspend fun insert(truck: Truck)
-    @Query("SELECT * FROM Truck") suspend fun getAll(): List<Truck>
-}
-
-@Dao
-interface DriverDao {
-    @Insert suspend fun insert(driver: Driver)
-    @Query("SELECT * FROM Driver") suspend fun getAll(): List<Driver>
-}
-
-@Dao
-interface ExpenseDao {
-    @Insert suspend fun insert(expense: Expense)
-    @Query("SELECT * FROM Expense") suspend fun getAll(): List<Expense>
-}
-
-// --------------------- STEP 4: DATABASE ---------------------
-
-@Database(entities = [Trip::class, Truck::class, Driver::class, Expense::class], version = 1)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun tripDao(): TripDao
-    abstract fun truckDao(): TruckDao
-    abstract fun driverDao(): DriverDao
-    abstract fun expenseDao(): ExpenseDao
-}
-
-// --------------------- STEP 1 & 5: UI + NAVIGATION ---------------------
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
