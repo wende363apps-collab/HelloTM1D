@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.livedata.observeAsState // ✅ Fix import
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,7 +53,12 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
             Button(
                 onClick = {
                     if (name.isNotBlank() && destination.isNotBlank() && distance.isNotBlank()) {
-                        viewModel.addTrip(name, destination, distance.toDoubleOrNull() ?: 0.0)
+                        val trip = Trip(
+                            name = name,
+                            destination = destination,
+                            distance = distance.toDoubleOrNull() ?: 0.0
+                        )
+                        viewModel.addTrip(trip) // ✅ Fixed: pass Trip object
                         name = ""
                         destination = ""
                         distance = ""
