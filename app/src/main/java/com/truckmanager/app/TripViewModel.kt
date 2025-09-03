@@ -3,26 +3,27 @@ package com.truckmanager.app
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class TripViewModel(application: Application) : AndroidViewModel(application) {
-    private val repo: TripRepository
+    private val repository: TripRepository
+
+    val trips: StateFlow<List<Trip>>
 
     init {
         val dao = AppDatabase.getDatabase(application).tripDao()
-        repo = TripRepository(dao)
+        repository = TripRepository(dao)
+        trips = repository.getAllTrips()
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     }
 
-    fun addTrip(destination: String, date: String, revenue: Double, expenses: Double) {
+    fun addTrip(origin: String, destination: String, date: String, cost: Double) {
         viewModelScope.launch {
-            val trip = Trip(destination = destination, date = date, revenue = revenue, expenses = expenses)
-            repo.insertTrip(trip)
-        }
-    }
-
-    fun deleteTrip(trip: Trip) {
-        viewModelScope.launch {
-            repo.deleteTrip(trip)
+            val trip = Trip(origin = origin, destination = destination, date = date, cost = cost)
+            repository.insertTrip(trip)
         }
     }
 }
