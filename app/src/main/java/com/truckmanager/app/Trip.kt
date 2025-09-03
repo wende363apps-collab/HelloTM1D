@@ -9,5 +9,6 @@ data class Trip(
     val origin: String,
     val destination: String,
     val date: String,
-    val cost: Double
+    val cost: Double,
+    val revenue: Double
 )
