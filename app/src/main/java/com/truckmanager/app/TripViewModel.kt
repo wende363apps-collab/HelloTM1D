@@ -16,12 +16,8 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
 
     val allTrips = repository.allTrips
 
-    fun addTrip(name: String, destination: String, distance: Double) {
-        val trip = Trip(
-            name = name,
-            destination = destination,
-            distance = distance
-        )
+    // Now accepts Trip object directly
+    fun addTrip(trip: Trip) {
         viewModelScope.launch {
             repository.insertTrip(trip)
         }
