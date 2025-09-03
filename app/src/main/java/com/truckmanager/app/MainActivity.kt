@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.compose.observeAsState   // ✅ Import fixed here
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun TripScreen(viewModel: TripViewModel = viewModel()) {
+    // Observe LiveData as State
     val allTrips by viewModel.allTrips.observeAsState(emptyList())
 
     Scaffold(
@@ -41,24 +42,31 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Trip form
+            // Trip form fields
             var name by remember { mutableStateOf("") }
             var destination by remember { mutableStateOf("") }
             var distance by remember { mutableStateOf("") }
 
-            OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Truck/Driver Name") })
-            OutlinedTextField(value = destination, onValueChange = { destination = it }, label = { Text("Destination") })
-            OutlinedTextField(value = distance, onValueChange = { distance = it }, label = { Text("Distance (km)") })
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Truck/Driver Name") }
+            )
+            OutlinedTextField(
+                value = destination,
+                onValueChange = { destination = it },
+                label = { Text("Destination") }
+            )
+            OutlinedTextField(
+                value = distance,
+                onValueChange = { distance = it },
+                label = { Text("Distance (km)") }
+            )
 
             Button(
                 onClick = {
                     if (name.isNotBlank() && destination.isNotBlank() && distance.isNotBlank()) {
-                        val trip = Trip(
-                            name = name,
-                            destination = destination,
-                            distance = distance.toDoubleOrNull() ?: 0.0
-                        )
-                        viewModel.addTrip(trip)
+                        viewModel.addTrip(name, destination, distance.toDoubleOrNull() ?: 0.0)
                         name = ""
                         destination = ""
                         distance = ""
