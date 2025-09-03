@@ -14,9 +14,10 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         repository = TripRepository(tripDao)
     }
 
+    // LiveData for all trips
     val allTrips = repository.allTrips
 
-    // ✅ Fixed: accepts (name, destination, distance)
+    // Add trip using individual parameters (matches MainActivity)
     fun addTrip(name: String, destination: String, distance: Double) {
         val trip = Trip(
             name = name,
@@ -28,6 +29,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    // Delete trip
     fun deleteTrip(trip: Trip) {
         viewModelScope.launch {
             repository.deleteTrip(trip)
