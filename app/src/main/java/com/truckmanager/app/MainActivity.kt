@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                DashboardScreen()
+                MainScreen()
             }
         }
     }
@@ -23,31 +23,69 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DashboardScreen() {
-    // Demo values (later we’ll connect to database)
-    val revenue = remember { mutableStateOf(120000.0) }
-    val expenses = remember { mutableStateOf(45000.0) }
-    val netIncome = revenue.value - expenses.value
+fun MainScreen() {
+    var selectedTab by remember { mutableStateOf("dashboard") }
 
     Scaffold(
         topBar = {
             SmallTopAppBar(
-                title = { Text("TM1D Dashboard 🚛") }
+                title = { Text("TM1D 🚛") }
             )
+        },
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == "dashboard",
+                    onClick = { selectedTab = "dashboard" },
+                    icon = { Text("📊") },
+                    label = { Text("Dashboard") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == "trips",
+                    onClick = { selectedTab = "trips" },
+                    icon = { Text("🛣️") },
+                    label = { Text("Trips") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == "settings",
+                    onClick = { selectedTab = "settings" },
+                    icon = { Text("⚙️") },
+                    label = { Text("Settings") }
+                )
+            }
         }
     ) { padding ->
-        Column(
+        Box(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
         ) {
-            StatCard("Revenue", "${revenue.value} Birr")
-            StatCard("Expenses", "${expenses.value} Birr")
-            StatCard("Net Income", "$netIncome Birr")
+            when (selectedTab) {
+                "dashboard" -> DashboardScreen()
+                "trips" -> Text("Trips screen coming soon")
+                "settings" -> Text("Settings screen coming soon")
+            }
         }
+    }
+}
+
+@Composable
+fun DashboardScreen() {
+    val revenue = remember { mutableStateOf(120000.0) }
+    val expenses = remember { mutableStateOf(45000.0) }
+    val netIncome = revenue.value - expenses.value
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        StatCard("Revenue", "${revenue.value} Birr")
+        StatCard("Expenses", "${expenses.value} Birr")
+        StatCard("Net Income", "$netIncome Birr")
     }
 }
 
