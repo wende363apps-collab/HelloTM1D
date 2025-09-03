@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.compose.observeAsState   // ✅ Added import
+import androidx.compose.runtime.livedata.observeAsState   // ✅ Fix for observeAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
             Button(
                 onClick = {
                     if (name.isNotBlank() && destination.isNotBlank() && distance.isNotBlank()) {
-                        viewModel.addTrip(name, destination, distance.toDoubleOrNull() ?: 0.0) // ✅ Fixed
+                        viewModel.addTrip(name, destination, distance.toDoubleOrNull() ?: 0.0)
                         name = ""
                         destination = ""
                         distance = ""
