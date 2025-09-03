@@ -1,8 +1,8 @@
 package com.truckmanager.app
 
-import kotlinx.coroutines.flow.Flow
+class TripRepository(private val tripDao: TripDao) {
+    val allTrips = tripDao.getAllTrips()
 
-class TripRepository(private val dao: TripDao) {
-    fun getAllTrips(): Flow<List<Trip>> = dao.getAllTrips()
-    suspend fun insertTrip(trip: Trip) = dao.insertTrip(trip)
+    suspend fun insert(trip: Trip) = tripDao.insertTrip(trip)
+    suspend fun delete(trip: Trip) = tripDao.deleteTrip(trip)
 }
