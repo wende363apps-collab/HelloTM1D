@@ -6,17 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.compose.observeAsState
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,28 +30,28 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
-    var selectedTab by remember { mutableStateOf("dashboard") }
+fun MainScreen(viewModel: TripViewModel = viewModel()) {
+    var selectedTab by remember { mutableStateOf(0) }
 
     Scaffold(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
-                    selected = selectedTab == "dashboard",
-                    onClick = { selectedTab = "dashboard" },
-                    icon = { Icon(Icons.Default.Dashboard, contentDescription = "Dashboard") },
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    icon = { Icon(Icons.Filled.Dashboard, contentDescription = "Dashboard") },
                     label = { Text("Dashboard") }
                 )
                 NavigationBarItem(
-                    selected = selectedTab == "trips",
-                    onClick = { selectedTab = "trips" },
-                    icon = { Icon(Icons.Default.List, contentDescription = "Trips") },
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    icon = { Icon(Icons.Filled.List, contentDescription = "Trips") },
                     label = { Text("Trips") }
                 )
                 NavigationBarItem(
-                    selected = selectedTab == "settings",
-                    onClick = { selectedTab = "settings" },
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Settings") },
+                    selected = selectedTab == 2,
+                    onClick = { selectedTab = 2 },
+                    icon = { Icon(Icons.Filled.Settings, contentDescription = "Settings") },
                     label = { Text("Settings") }
                 )
             }
@@ -59,9 +59,9 @@ fun MainScreen() {
     ) { padding ->
         Box(modifier = Modifier.padding(padding)) {
             when (selectedTab) {
-                "dashboard" -> DashboardScreen()
-                "trips" -> TripScreen()
-                "settings" -> SettingsScreen()
+                0 -> DashboardScreen()
+                1 -> TripScreen(viewModel)
+                2 -> SettingsScreen()
             }
         }
     }
@@ -69,40 +69,15 @@ fun MainScreen() {
 
 @Composable
 fun DashboardScreen() {
-    val revenue = 120000.0
-    val expenses = 45000.0
-    val netIncome = revenue - expenses
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        StatCard("Revenue", "$revenue Birr")
-        StatCard("Expenses", "$expenses Birr")
-        StatCard("Net Income", "$netIncome Birr")
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Dashboard 🚛", style = MaterialTheme.typography.headlineMedium)
     }
 }
 
 @Composable
-fun StatCard(title: String, value: String) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(100.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(title, style = MaterialTheme.typography.titleMedium)
-            Text(value, style = MaterialTheme.typography.headlineSmall)
-        }
+fun SettingsScreen() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text("Settings ⚙️", style = MaterialTheme.typography.headlineMedium)
     }
 }
 
@@ -116,7 +91,6 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Form
         var name by remember { mutableStateOf("") }
         var destination by remember { mutableStateOf("") }
         var distance by remember { mutableStateOf("") }
@@ -141,7 +115,6 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
 
         Divider()
 
-        // List
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -169,15 +142,5 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
                 }
             }
         }
-    }
-}
-
-@Composable
-fun SettingsScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Settings coming soon ⚙️")
     }
 }
