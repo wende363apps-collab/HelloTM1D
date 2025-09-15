@@ -116,8 +116,9 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
 
         Button(
             onClick = {
-                if (name.isNotBlank() && destination.isNotBlank() && distance.isNotBlank()) {
-                    viewModel.addTrip(name, destination, distance.toDoubleOrNull() ?: 0.0)
+                val km = distance.toDoubleOrNull()
+                if (name.isNotBlank() && destination.isNotBlank() && km != null) {
+                    viewModel.addTrip(name, destination, km)
                     name = ""; destination = ""; distance = ""
                 }
             },
@@ -128,7 +129,7 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
 
         Divider()
 
-        // IMPORTANT: use items(allTrips) so each item is a Trip (not an Int index)
+        // Use items(allTrips) so each lambda param is a Trip
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
