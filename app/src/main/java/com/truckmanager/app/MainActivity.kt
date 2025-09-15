@@ -6,17 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.compose.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,17 +95,30 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
         var destination by remember { mutableStateOf("") }
         var distance by remember { mutableStateOf("") }
 
-        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text("Truck/Driver Name") })
-        OutlinedTextField(value = destination, onValueChange = { destination = it }, label = { Text("Destination") })
-        OutlinedTextField(value = distance, onValueChange = { distance = it }, label = { Text("Distance (km)") })
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Truck/Driver Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = destination,
+            onValueChange = { destination = it },
+            label = { Text("Destination") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = distance,
+            onValueChange = { distance = it },
+            label = { Text("Distance (km)") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Button(
             onClick = {
                 if (name.isNotBlank() && destination.isNotBlank() && distance.isNotBlank()) {
                     viewModel.addTrip(name, destination, distance.toDoubleOrNull() ?: 0.0)
-                    name = ""
-                    destination = ""
-                    distance = ""
+                    name = ""; destination = ""; distance = ""
                 }
             },
             modifier = Modifier.align(Alignment.End)
@@ -115,6 +128,7 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
 
         Divider()
 
+        // IMPORTANT: use items(allTrips) so each item is a Trip (not an Int index)
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
