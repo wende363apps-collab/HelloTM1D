@@ -83,6 +83,7 @@ fun SettingsScreen() {
 
 @Composable
 fun TripScreen(viewModel: TripViewModel = viewModel()) {
+    // LiveData<List<Trip>> -> State<List<Trip>>
     val allTrips by viewModel.allTrips.observeAsState(emptyList())
 
     Column(
@@ -129,7 +130,7 @@ fun TripScreen(viewModel: TripViewModel = viewModel()) {
 
         Divider()
 
-        // Use items(allTrips) so each lambda param is a Trip
+        // IMPORTANT: items(allTrips) so each lambda param is a Trip
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
