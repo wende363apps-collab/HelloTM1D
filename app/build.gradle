@@ -52,17 +52,23 @@ dependencies {
     // Compose BOM
     implementation platform("androidx.compose:compose-bom:2024.02.01")
 
-    // Compose + Material3
+    // Compose UI + Material3
     implementation "androidx.compose.ui:ui"
     implementation "androidx.compose.ui:ui-graphics"
     implementation "androidx.compose.ui:ui-tooling-preview"
     implementation "androidx.compose.material3:material3"
 
+    // Material icons (needed for Icons.Filled.Dashboard/List/Settings)
+    implementation "androidx.compose.material:material-icons-extended"
+
     // Activity & Lifecycle
     implementation "androidx.activity:activity-compose:1.8.2"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.2"
 
-    // IMPORTANT: Compose <-> LiveData adapter (provides observeAsState)
+    // LiveData -> Compose adapter (gives observeAsState for LiveData)
+    implementation "androidx.compose.runtime:runtime-livedata"
+
+    // (Optional but good) lifecycle-aware state helpers
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.2"
 
     // Navigation (Compose)
