@@ -16,20 +16,83 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 
-// ✅ imports for text fields & keyboard types
+// TextField keyboard
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
+
+// Navigation
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                TripScreen()
+                AppWithBottomNav()
             }
         }
     }
 }
+
+/* ------------------------------- Navigation ------------------------------- */
+
+sealed class Dest(val route: String, val label: String) {
+    data object Dashboard : Dest("dashboard", "Dashboard")
+    data object Trips : Dest("trips", "Trips")
+    data object Settings : Dest("settings", "Settings")
+}
+
+@Composable
+fun AppWithBottomNav() {
+    val nav = rememberNavController()
+    val items = listOf(Dest.Dashboard, Dest.Trips, Dest.Settings)
+
+    Scaffold(
+        bottomBar = {
+            BottomBar(nav = nav, items = items)
+        }
+    ) { padding ->
+        NavHost(
+            navController = nav,
+            startDestination = Dest.Trips.route, // start on Trips
+            modifier = Modifier.padding(padding)
+        ) {
+            composable(Dest.Dashboard.route) { DashboardScreenSimple() }
+            composable(Dest.Trips.route) { TripScreen() }
+            composable(Dest.Settings.route) { SettingsScreenSimple() }
+        }
+    }
+}
+
+@Composable
+private fun BottomBar(nav: NavHostController, items: List<Dest>) {
+    val backStack by nav.currentBackStackEntryAsState()
+    val current = backStack?.destination?.route
+
+    NavigationBar {
+        items.forEach { item ->
+            NavigationBarItem(
+                selected = current == item.route,
+                onClick = {
+                    if (current != item.route) nav.navigate(item.route) {
+                        popUpTo(nav.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                // We avoid icon dependencies by using a spacer as a placeholder icon
+                icon = { Spacer(Modifier.size(24.dp)) },
+                label = { Text(item.label) }
+            )
+        }
+    }
+}
+
+/* ------------------------------- Trips Screen ------------------------------ */
 
 @Composable
 fun TripScreen(viewModel: TripViewModel = viewModel()) {
@@ -191,4 +254,34 @@ private fun EditTripDialog(
             TextButton(onClick = onDismiss) { Text("Cancel") }
         }
     )
+}
+
+/* -------------------------- Simple placeholder screens -------------------------- */
+
+@Composable
+fun DashboardScreenSimple() {
+    Scaffold(topBar = { TopAppBar(title = { Text("Dashboard") }) }) { padding ->
+        Box(
+            Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Dashboard placeholder")
+        }
+    }
+}
+
+@Composable
+fun SettingsScreenSimple() {
+    Scaffold(topBar = { TopAppBar(title = { Text("Settings") }) }) { padding ->
+        Box(
+            Modifier
+                .padding(padding)
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("Settings placeholder")
+        }
+    }
 }
