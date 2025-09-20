@@ -15,8 +15,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.viewModel // only for viewModel()
-import androidx.compose.runtime.livedata.observeAsState // <-- correct import for LiveData
+import androidx.lifecycle.viewmodel.compose.viewModel // <-- correct import
+import androidx.compose.runtime.livedata.observeAsState   // <-- LiveData -> State
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,7 +30,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen(viewModel: TripViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
+fun MainScreen(viewModel: TripViewModel = viewModel()) {
     var selectedTab by remember { mutableStateOf(0) }
 
     Scaffold(
@@ -82,8 +82,7 @@ fun SettingsScreen() {
 }
 
 @Composable
-fun TripScreen(viewModel: TripViewModel = androidx.lifecycle.viewmodel.compose.viewModel()) {
-    // LiveData<List<Trip>> -> State<List<Trip>>
+fun TripScreen(viewModel: TripViewModel = viewModel()) {
     val allTrips by viewModel.allTrips.observeAsState(emptyList())
 
     Column(
@@ -130,7 +129,6 @@ fun TripScreen(viewModel: TripViewModel = androidx.lifecycle.viewmodel.compose.v
 
         Divider()
 
-        // Make sure we iterate the List<Trip> directly
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
