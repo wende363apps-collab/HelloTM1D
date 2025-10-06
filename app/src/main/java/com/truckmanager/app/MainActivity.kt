@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+
 package com.truckmanager.app
 
 import android.os.Bundle
@@ -7,17 +9,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.compose.runtime.livedata.observeAsState
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +33,6 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(viewModel: TripViewModel = viewModel()) {
-    // simple tab switching state (no nav lib needed)
     var selectedTab by remember { mutableStateOf(0) } // 0=Dashboard, 1=Trips
     val tabs = listOf("Dashboard", "Trips")
 
@@ -103,8 +104,7 @@ fun StatCard(title: String, value: String) {
     }
 }
 
-/** TRIPS (Add + Search + Edit + Delete + Validation/Toasts) **/
-@OptIn(ExperimentalMaterial3Api::class)
+/** TRIPS (Add + Search + Edit + Delete + Validation) **/
 @Composable
 fun TripsScreen(
     viewModel: TripViewModel,
@@ -124,10 +124,9 @@ fun TripsScreen(
     var editDestination by remember { mutableStateOf("") }
     var editDistance by remember { mutableStateOf("") }
 
-    fun showSnack(msg: String) {
-        LaunchedEffect(msg) {
-            snackbarHostState.showSnackbar(msg)
-        }
+    val scope = rememberCoroutineScope()
+    fun showSnack(msg: String) = scope.launch {
+        snackbarHostState.showSnackbar(message = msg)
     }
 
     Column(
@@ -193,7 +192,10 @@ fun TripsScreen(
 
         // Trip list
         Text("Trips", style = MaterialTheme.typography.titleMedium)
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier.fillMaxSize()
+        ) {
             items(trips, key = { it.id }) { trip ->
                 Card(
                     modifier = Modifier
