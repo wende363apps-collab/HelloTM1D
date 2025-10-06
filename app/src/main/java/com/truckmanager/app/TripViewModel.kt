@@ -1,7 +1,11 @@
 package com.truckmanager.app
 
 import android.app.Application
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 class TripViewModel(application: Application) : AndroidViewModel(application) {
@@ -9,24 +13,36 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: TripRepository
 
     // Backing for search text
-    private val searchQuery = MutableLiveData<String>("")
+    private val searchQuery = MutableLiveData("")
 
-    // Expose filtered trips: when search is blank -> allTrips; otherwise -> searchTrips
-    val filteredTrips: LiveData<List<Trip>>
+    // Expose filtered trips without Transformations: switch sources manually
+    val filteredTrips = MediatorLiveData<List<Trip>>()
 
     val allTrips: LiveData<List<Trip>>
+
+    // Keep track of currently attached source so we can swap it
+    private var currentSource: LiveData<List<Trip>>
 
     init {
         val dao = AppDatabase.getDatabase(application).tripDao()
         repository = TripRepository(dao)
         allTrips = repository.allTrips
 
-        filteredTrips = Transformations.switchMap(searchQuery) { q ->
-            if (q.isBlank()) {
+        // Start with all trips
+        currentSource = allTrips
+        filteredTrips.addSource(currentSource) { filteredTrips.value = it }
+
+        // When search changes, switch the source
+        filteredTrips.addSource(searchQuery) { q ->
+            // remove old source
+            filteredTrips.removeSource(currentSource)
+            currentSource = if (q.isNullOrBlank()) {
                 allTrips
             } else {
                 repository.searchTrips(q)
             }
+            // attach new source
+            filteredTrips.addSource(currentSource) { filteredTrips.value = it }
         }
     }
 
@@ -35,9 +51,7 @@ class TripViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addTrip(name: String, destination: String, distanceKm: Double): Boolean {
-        // basic validation
         if (name.isBlank() || destination.isBlank() || distanceKm <= 0.0) return false
-
         viewModelScope.launch {
             repository.insertTrip(
                 Trip(
